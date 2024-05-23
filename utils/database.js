@@ -1,10 +1,15 @@
-const mysql = require("mysql2");
+const mongodb = require("mongodb");
+const MongodbClient = mongodb.MongoClient;
+const dotenv = require("dotenv");
+dotenv.config();
 
-const pool = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    database: "blog",
-    password: ""
-})
+const MongodbConnector = () => {
+  return MongodbClient.connect(process.env.MONGODB_URL)
+    .then((result) => {
+      console.log(result);
+      console.log("Database Successfully connected ✅");
+    })
+    .catch((err) => console.log(err));
+};
 
-module.exports = pool.promise()
+module.exports = MongodbConnector;
