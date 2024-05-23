@@ -2,7 +2,8 @@
 const Post = require("../models/postModel");
 
 exports.createPost = (req, res) => {
-  Post.create(req.body)
+  console.log(req.user);
+  Post.create({ ...req.body, userId: req.user })
     .then((result) => {
       console.log(result);
       return res.redirect("/");
@@ -17,6 +18,8 @@ exports.renderCreatePage = (req, res) => {
 exports.renderHomePage = (req, res) => {
   // res.sendFile(path.join(__dirname, "..", "views", "homepage.html"));
   Post.find()
+    //  .select("title description")
+    .populate("userId", "username")
     .sort({ title: 1 })
     .then((posts) => {
       res.render("home", { title: "home", posts });

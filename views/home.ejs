@@ -17,7 +17,9 @@
   </div>
   <% } else { %> <% for(let post of posts) { %>
   <div class="box">
-    <p class="post-title"><%= post.title %></p>
+    
+    <h2 class="post-title"><%= post.title %></h2>
+    <p><%= post.userId.username %></p>
     <a class="btn" href="/post/<%= post._id %>">See More...</a>
   </div>
 
