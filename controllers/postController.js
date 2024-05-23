@@ -2,11 +2,7 @@
 const Post = require("../models/postModel");
 
 exports.createPost = (req, res) => {
-  const { title, description, imgUrl } = req.body;
-
-  const post = new Post(title, description, imgUrl);
-  post
-    .create()
+  Post.create(req.body)
     .then((result) => {
       console.log(result);
       return res.redirect("/");
@@ -20,7 +16,8 @@ exports.renderCreatePage = (req, res) => {
 
 exports.renderHomePage = (req, res) => {
   // res.sendFile(path.join(__dirname, "..", "views", "homepage.html"));
-  Post.getPosts()
+  Post.find()
+    .sort({ title: 1 })
     .then((posts) => {
       res.render("home", { title: "home", posts });
     })
@@ -31,17 +28,21 @@ exports.getPost = (req, res) => {
   const postId = req.params.postId;
   if (!postId) return res.write("ERROR");
 
-  Post.getSinglePost(postId)
+  Post.findById(postId)
     .then((post) => {
       if (!post) return res.redirect("/");
       res.render("detail", { title: post.title, post });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.send(err.message);
+      console.log(err);
+    });
 };
 
 exports.getEditPost = (req, res) => {
   const { postId } = req.params;
-  Post.getSinglePost(postId)
+
+  Post.findOne({ _id: postId })
     .then((post) => {
       if (!post) return res.redirect("/");
       res.render("edit-post", { title: post.title, post });
@@ -51,13 +52,12 @@ exports.getEditPost = (req, res) => {
 
 exports.updatePost = (req, res) => {
   const { postId } = req.params;
+
   if (!postId) return res.redirect("/");
 
   const { title, description, imgUrl } = req.body;
 
-  const post = new Post(title, description, imgUrl,postId);
-  post
-    .create()
+  Post.findByIdAndUpdate(postId, { title, description, imgUrl })
     .then((post) => {
       if (!post) throw new Error("Something Went Wrong");
       res.redirect("/");
@@ -69,8 +69,9 @@ exports.deletePost = (req, res) => {
   const { postId } = req.params;
   if (!postId) return res.redirect("/");
 
-  Post.deletePost(postId)
-    .then(() => {
+  Post.findByIdAndDelete(postId)
+    .then((result) => {
+      console.log(result);
       console.log("successfully deleted");
       res.redirect("/");
     })
