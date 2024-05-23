@@ -2,15 +2,15 @@
 <body>
   <section class="add-post">
     <a href="/">Go back home</a>
-    <h1 class="title">Add a new post here!</h1>
-    <form action="/admin" method="POST">
+    <h1 class="title">Update post here!</h1>
+    <form action="/admin/edit/<%= post._id %>" method="POST">
       <div>
         <label for="title">Enter title</label>
-        <input type="text" id="title" name="title" required />
+        <input type="text" id="title" name="title" value="<%= post.title %>" required />
       </div>
       <div>
         <label for="photo">Enter photo</label>
-        <input type="text" id="photo" name="imgUrl" required />
+        <input type="text" id="photo" name="imgUrl" value="<%= post.imgUrl %>" required />
       </div>
       <div>
         <label for="description">Enter description</label>
@@ -19,9 +19,9 @@
           id="description"
           cols="30"
           rows="10"
-        ></textarea>
+        ><%= post.description %></textarea>
       </div>
-      <button>Add Post</button>
+      <button>Update Post</button>
     </form>
   </section>
 </body>

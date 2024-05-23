@@ -5,7 +5,7 @@ const adminRouter = require("./routes/adminRouter");
 const bodyParser = require("body-parser");
 const app = express();
 
-const MongodbConnector = require("./utils/database");
+const {MongodbConnector} = require("./utils/database");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
