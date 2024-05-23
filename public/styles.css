@@ -1,5 +1,4 @@
-body {
-}
+
 .title {
   text-align: center;
 }
@@ -10,8 +9,6 @@ body {
   padding-left: 1rem;
   padding-bottom: 1rem;
 }
-
-
 
 .post-title {
   font-size: 1.4rem;
@@ -59,6 +56,18 @@ body {
   outline: none;
 }
 
+.btn {
+  text-decoration: none;
+  align-self: flex-end;
+  padding: 0.5rem 2rem;
+  /* padding: 1rem 2rem; */
+  cursor: pointer;
+  background: black;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
 .details {
   padding: 2rem;
 }

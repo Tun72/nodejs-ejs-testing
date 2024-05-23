@@ -1,7 +1,12 @@
 <%- include("./includes/header.ejs") %>
 <section class="details">
   <h1><%= post.title %></h1>
-  <img src="<%= post.imgUrl %>"  alt="<%= post.title %>" />
+  <img src="<%= post.imgUrl %>" alt="<%= post.title %>" />
   <p><%= post.description %></p>
+  <hr />
+  <form action="/admin/post/<%= post.id %>/delete" method="POST">
+    <button class="btn">Delete Post</button>
+  </form>
+  <a href="/admin/post/<%= post.id %>/edit">Edit Post</a>
 </section>
 <%- include("./includes/footer.ejs") %>

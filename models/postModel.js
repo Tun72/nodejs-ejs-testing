@@ -22,7 +22,7 @@
 //   }
 // };
 
-const {DataTypes} = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 const sequelize = require("../utils/database");
 
@@ -37,16 +37,17 @@ const Post = sequelize.define("post", {
   },
   title: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   description: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: false,
   },
   imgUrl: {
     type: DataTypes.STRING,
-    allowNull: false
-  }
+    allowNull: false,
+  },
 });
+
 
 module.exports = Post;

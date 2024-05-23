@@ -3,18 +3,9 @@ const Post = require("../models/postModel");
 
 exports.createPost = (req, res) => {
   const { title, description, photo } = req.body;
-  // const post = new Post(title, description, photo);
-  // post
-  //   .setPost()
-  //   .then((data) => {
-  //     console.log(data);
-  //     res.redirect("/");
-  //   })
-  //   .catch((e) => {
-  //     res.write(e);
-  //   });
 
-  Post.create({ title, description, imgUrl: photo })
+  req.user
+    .createPost({ title, description, imgUrl: photo })
     .then((data) => {
       console.log(data);
       res.redirect("/");
@@ -29,7 +20,9 @@ exports.renderCreatePage = (req, res) => {
 };
 
 exports.renderHomePage = (req, res) => {
-  Post.findAll()
+  Post.findAll({
+    order: [["createdAt", "DESC"]],
+  })
     .then((posts) => {
       res.render("home", { title: "home", posts });
     })
@@ -37,15 +30,6 @@ exports.renderHomePage = (req, res) => {
       console.log(e);
       return res.send(e.message);
     });
-  // Post.getAllPosts()
-  //   .then(([posts]) => {
-  //     // console.log(posts);
-  //     res.render("home", { title: "home", posts });
-  //   })
-  //   .catch((e) => {
-  //     console.log(e);
-  //     return res.send(e.message);
-  //   });
 };
 
 exports.getPost = (req, res) => {
@@ -65,15 +49,51 @@ exports.getPost = (req, res) => {
       console.log(e);
       return res.send(e.message);
     });
+};
 
-  // Post.getSinglePost(postId)
-  //   .then(([post]) => {
-  //     console.log(post);
-  //     if (post.length === 0) throw new Error("Not Found");
-  //     res.render("detail", { title: "detail", post: post[0] });
-  //   })
-  //   .catch((e) => {
-  //     console.log(e);
-  //     return res.send(e.message);
-  //   });
+exports.deletePost = (req, res) => {
+  const { postId } = req.params;
+  Post.findByPk(postId)
+    .then((post) => {
+      if (!post) throw new Error("ERROR");
+      return post.destroy();
+    })
+    .then((result) => {
+      console.log(result);
+      return res.redirect("/");
+    })
+    .catch((e) => {
+      console.log(e);
+      return res.send(e.message);
+    });
+  console.log(postId);
+};
+
+exports.getOldPost = (req, res) => {
+  const { postId } = req.params;
+
+  console.log(postId);
+  Post.findByPk(postId)
+    .then((post) => {
+      if (!post) throw new Error("ERROR");
+      res.render("edit-post", { title: "edit", post });
+    })
+    .catch((e) => {
+      console.log(e);
+      return res.send(e.message);
+    });
+};
+
+exports.updatePost = (req, res) => {
+  const { postId } = req.params;
+  const { title, imgUrl, description } = req.body;
+  Post.update({ title, imgUrl, description }, { where: { id: postId } })
+    .then((result) => {
+      // if (!post) throw new Error("ERROR");
+      res.redirect("/");
+    })
+    .catch((e) => {
+      console.log(e);
+      return res.send(e.message);
+    });
 };
