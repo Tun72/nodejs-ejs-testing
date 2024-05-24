@@ -32,7 +32,7 @@ exports.renderHomePage = (req, res) => {
 
 exports.getPost = (req, res) => {
   const postId = req.params.postId;
-  if (!postId) return res.write("ERROR");
+  if (!postId) return res.send("ERROR");
 
   Post.findById(postId)
     .then((post) => {
