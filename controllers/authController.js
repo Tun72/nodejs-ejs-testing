@@ -4,7 +4,12 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLoginData = (req, res, next) => {
-  res.setHeader("Set-Cookie", "isLogIn=true;Secure; HttpOnly; path=/");
-  console.log("true");
+  req.session.isLogin = true;
   res.redirect("/");
+};
+
+exports.logout = (req, res, next) => {
+  req.session.destroy((_) => {
+    res.redirect("/");
+  });
 };
