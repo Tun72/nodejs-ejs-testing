@@ -37,7 +37,10 @@ exports.getPost = (req, res) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) return res.redirect("/");
-      res.render("detail", { title: post.title, post });
+      res.render("detail", {
+        title: post.title,
+        post,
+      });
     })
     .catch((err) => {
       res.send(err.message);
