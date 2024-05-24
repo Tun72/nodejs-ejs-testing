@@ -13,6 +13,8 @@ const UserSchema = new Schema(
     },
     email: { type: String, required: true, unique: true },
     password: { type: String, minLength: 6, select: false },
+    resetToken: { type: String, select: false },
+    tokenExpireDate: { type: Date },
   },
   { timestamp: true }
 );

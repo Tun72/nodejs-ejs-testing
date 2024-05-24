@@ -18,4 +18,5 @@ router
   .route("/edit/:postId")
   .get(postController.getEditPost)
   .post(postController.updatePost);
+
 module.exports = router;
