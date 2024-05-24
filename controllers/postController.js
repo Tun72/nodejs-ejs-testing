@@ -2,7 +2,6 @@
 const Post = require("../models/postModel");
 
 exports.createPost = (req, res) => {
-  console.log(req.user);
   Post.create({ ...req.body, userId: req.user })
     .then((result) => {
       console.log(result);
@@ -37,9 +36,13 @@ exports.getPost = (req, res) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) return res.redirect("/");
+
+      console.log(post.userId);
+      console.log(req?.user?._id);
       res.render("detail", {
         title: post.title,
         post,
+        isOwner: String(req?.user?._id) === String(post.userId),
       });
     })
     .catch((err) => {

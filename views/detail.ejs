@@ -4,10 +4,12 @@
   <img src="<%= post.imgUrl %>" alt="<%= post.title %>" />
   <p><%= post.description %></p>
 
+  <% if(isOwner) { %>
   <form action="/admin/post/<%= post._id %>/delete" method="POST">
     <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
     <button type="submit">delete</button>
   </form>
   <a href="/admin/edit/<%= post._id %>">Update</a>
+  <% } %>
 </section>
 <%- include("./includes/footer.ejs") %>

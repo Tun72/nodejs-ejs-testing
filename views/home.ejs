@@ -16,7 +16,7 @@
   <% } %>
   <hr />
   <h2>Posts</h2>
-  <% if(posts.length === 0) { %>
+  <% if(posts.length === 0 && isLogin) { %>
   <div class="create">
     <h4>Nothing to see ?</h4>
     <p>Create a new post now !!!</p>
@@ -25,7 +25,7 @@
   <% } else { %> <% for(let post of posts) { %>
   <div class="box">
     <h2 class="post-title"><%= post.title %></h2>
-    <p><%= post.userId.username %></p>
+    <p><%= post?.userId?.username ?? "Anonymous" %></p>
     <a class="btn" href="/post/<%= post._id %>">See More...</a>
   </div>
 

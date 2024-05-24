@@ -71,6 +71,8 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.isLogin = req.session.isLogin || false;
   res.locals.csrfToken = req.csrfToken();
+
+  
   next();
 });
 app.use("/", postRouter);
