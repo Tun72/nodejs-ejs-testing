@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const env = require("dotenv");
+env.config();
 exports.getLogin = (req, res, next) => {
   return res.render("auth/login", {
     title: "Login",
@@ -8,7 +10,10 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getRegister = (req, res, next) => {
-  return res.render("auth/register", { title: "Register" });
+  return res.render("auth/register", {
+    title: "Register",
+    errorMessage: req.flash("error"),
+  });
 };
 
 exports.postLoginData = (req, res, next) => {
@@ -24,7 +29,6 @@ exports.postLoginData = (req, res, next) => {
       return bcrypt.compare(password, user.password);
     })
     .then((isMatch) => {
-      console.log(isMatch);
       if (!isMatch) throw new Error("Auth Error!");
 
       req.session.isLogin = true;
@@ -55,10 +59,19 @@ exports.postRegisterData = (req, res, next) => {
         password: result,
       });
     })
-    .then(() => res.redirect("/auth/login"))
+    .then((user) => {
+      console.log(req.transporter);
+      req.transporter.sendMail({
+        from: process.env.SENDER_MAIL,
+        to: user.email,
+        subject: "Register Successful",
+        html: "<h1>Register account Successful</h1> <p>Login using this email </p>",
+      });
+      res.redirect("/auth/login");
+    })
     .catch((err) => {
       req.flash("error", err.message);
-      res.redirect("/auth/login");
+      res.redirect("/auth/register");
     });
   //   req.session.isLogin = true;
   //   res.redirect("/");
