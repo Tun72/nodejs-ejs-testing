@@ -1,7 +1,10 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 exports.getLogin = (req, res, next) => {
-  return res.render("auth/login", { title: "Login" });
+  return res.render("auth/login", {
+    title: "Login",
+    errorMessage: req.flash("error"),
+  });
 };
 
 exports.getRegister = (req, res, next) => {
@@ -11,7 +14,8 @@ exports.getRegister = (req, res, next) => {
 exports.postLoginData = (req, res, next) => {
   const { email, password } = req.body;
   let userInfo;
-  User.findOne({ email }).select("+password")
+  User.findOne({ email })
+    .select("+password")
     .then((user) => {
       if (!user) throw new Error("Auth Error!User Not Exit Please Register!");
       userInfo = user;
@@ -20,18 +24,18 @@ exports.postLoginData = (req, res, next) => {
       return bcrypt.compare(password, user.password);
     })
     .then((isMatch) => {
-        console.log(isMatch);
+      console.log(isMatch);
       if (!isMatch) throw new Error("Auth Error!");
 
       req.session.isLogin = true;
       req.session.userInfo = userInfo;
       return req.session.save((err) => {
         res.redirect("/");
-      }); 
+      });
     })
     .catch((err) => {
-      res.send(err.message);
-      console.log(err);
+      req.flash("error", err.message);
+      res.redirect("/auth/login");
     });
 };
 
@@ -53,8 +57,8 @@ exports.postRegisterData = (req, res, next) => {
     })
     .then(() => res.redirect("/auth/login"))
     .catch((err) => {
-      res.send(err.message);
-      console.log(err);
+      req.flash("error", err.message);
+      res.redirect("/auth/login");
     });
   //   req.session.isLogin = true;
   //   res.redirect("/");

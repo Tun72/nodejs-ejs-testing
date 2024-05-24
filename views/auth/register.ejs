@@ -4,6 +4,9 @@
     <a href="/">Go back home</a>
     <h1 class="title">Create a new account</h1>
     <form action="/auth/register" method="POST">
+      <% if(errorMessage.length > 0) { %>
+      <span class="errorMessage"><%= errorMessage[0] %></span>
+      <% }%>
       <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
       <div>
         <label for="username">Username</label>

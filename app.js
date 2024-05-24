@@ -5,6 +5,7 @@ const session = require("express-session");
 const csrf = require("csurf");
 const mongoStore = require("connect-mongodb-session")(session);
 const mongoose = require("mongoose");
+const flash = require("connect-flash");
 
 const bodyParser = require("body-parser");
 dotenv.config();
@@ -46,6 +47,7 @@ app.use(
 );
 
 app.use(csrfProtect);
+app.use(flash())
 
 app.use((req, res, next) => {
   if (!req.session.isLogin) return next();

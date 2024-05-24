@@ -71,3 +71,10 @@ body {
 .details image {
   width: 100%;
 }
+
+.errorMessage {
+  border: red solid rgb(249, 26, 26);
+  background-color: rgba(235, 81, 81, 0.712);
+  color: #fff;
+  padding: 1rem 1.5rem;
+}
