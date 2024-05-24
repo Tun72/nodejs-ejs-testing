@@ -11,8 +11,6 @@ body {
   padding-bottom: 1rem;
 }
 
-
-
 .post-title {
   font-size: 1.4rem;
   font-weight: 700;
@@ -25,6 +23,7 @@ body {
   font-size: 2rem;
 }
 
+.auth-form form,
 .add-post form {
   max-width: 50%;
   margin: 0 auto;
@@ -33,6 +32,7 @@ body {
   gap: 2rem;
 }
 
+.auth-form input,
 .add-post input,
 .add-post textarea {
   border-radius: 5px;
@@ -42,12 +42,14 @@ body {
   border: 1px solid black;
 }
 
+.auth-form div,
 .add-post div {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
 }
 
+.auth-form button,
 .add-post button {
   align-self: flex-end;
   padding: 1rem 2rem;

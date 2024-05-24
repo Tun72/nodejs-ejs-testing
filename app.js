@@ -6,6 +6,8 @@ dotenv.config();
 
 const postRouter = require("./routes/postRouter");
 const adminRouter = require("./routes/adminRouter");
+const authRouter = require("./routes/authRouter");
+
 
 const User = require("./models/userModel");
 
@@ -28,6 +30,7 @@ app.use((req, res, next) => {
 
 app.use("/", postRouter);
 app.use("/admin", adminRouter);
+app.use("/auth", authRouter)
 
 const PORT = process.env.PORT || 3000;
 

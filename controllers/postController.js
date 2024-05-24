@@ -17,12 +17,16 @@ exports.renderCreatePage = (req, res) => {
 
 exports.renderHomePage = (req, res) => {
   // res.sendFile(path.join(__dirname, "..", "views", "homepage.html"));
+  let cookie = req.get("Cookie");
+  cookie = cookie?.split("=")[1]?.trim();
+  cookie = cookie === "true"
+  console.log(cookie);
   Post.find()
     //  .select("title description")
     .populate("userId", "username")
     .sort({ title: 1 })
     .then((posts) => {
-      res.render("home", { title: "home", posts });
+      res.render("home", { title: "home", posts, isLogin: cookie });
     })
     .catch((err) => console.log(err));
 };

@@ -6,7 +6,10 @@
     veniam pariatur autem. Maxime velit eos sint. Tempore quam cumque optio
     laborum dolore commodi cum dolorem deleniti soluta, ea nemo.
   </p>
+  <% if(isLogin) { %>
   <a href="/admin/create-post">Add a new post</a>
+  <% } %>
+  <a href="/auth/login">Create a new account</a>
   <hr />
   <h2>Posts</h2>
   <% if(posts.length === 0) { %>
@@ -17,7 +20,6 @@
   </div>
   <% } else { %> <% for(let post of posts) { %>
   <div class="box">
-    
     <h2 class="post-title"><%= post.title %></h2>
     <p><%= post.userId.username %></p>
     <a class="btn" href="/post/<%= post._id %>">See More...</a>
