@@ -1,28 +1,45 @@
 <%- include("../includes/header.ejs") %>
 <body>
   <section class="auth-form">
-    <a href="/">Go back home</a>
-    <h1 class="title">Create a new account</h1>
-    <form action="/auth/register" method="POST">
+    <h1 class="title">Register</h1>
+    <div class="form-design">
       <% if(errorMessage.length > 0) { %>
-      <span class="errorMessage"><%= errorMessage[0] %></span>
+      <span class="errorMessage"><%= errorMessage %></span>
       <% }%>
-      <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
-      <div>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required />
+
+      <form action="/auth/register" method="POST">
+        <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
+        <div>
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            required
+            value="<%= `${locals?.oldFormData ? oldFormData?.username : ''}` %>"
+          />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="<%= `${locals?.oldFormData ? oldFormData?.email : ''}` %>"
+            required
+          />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button>Register</button>
+      </form>
+      <div class="form-action">
+        <a href="/auth/login">login</a>
+        <a href="/">Go back home</a>
       </div>
-      <div>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required />
-      </div>
-      <div>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required />
-      </div>
-      <button>Register</button>
-    </form>
-    <a href="/auth/login">login</a>
+    </div>
   </section>
 </body>
 <%- include("../includes/footer.ejs") %>

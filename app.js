@@ -26,6 +26,8 @@ const postRouter = require("./routes/postRouter");
 const adminRouter = require("./routes/adminRouter");
 const authRouter = require("./routes/authRouter");
 
+//contoller 
+const errorController = require("./controllers/errorController")
 // middleware
 const loginMiddleware = require("./middlewares/loginMiddleware");
 
@@ -72,7 +74,6 @@ app.use((req, res, next) => {
   res.locals.isLogin = req.session.isLogin || false;
   res.locals.csrfToken = req.csrfToken();
 
-  
   next();
 });
 app.use("/", postRouter);
@@ -81,24 +82,32 @@ app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 3000;
 
+app.all("*", (req, res) => {
+  return res.status(404).render("error/404.ejs", { title: 404 });
+});
+
+app.use(
+   errorController.get500Page
+)
+
 mongoose
   .connect(process.env.MONGODB_URL)
-  .then((result) => {
+  .then((_) => {
     console.log("database successfully connected ✅");
     app.listen(3000, () => {
       console.log("Server is running at http://localhost:" + PORT);
     });
 
-    return User.findOne().then((user) => {
-      if (!user) {
-        return User.create({
-          username: "admin",
-          email: "admin@gmail.com",
-          password: "admin123",
-        });
-      }
-      return user;
-    });
+    // return User.findOne().then((user) => {
+    //   if (!user) {
+    //     return User.create({
+    //       username: "admin",
+    //       email: "admin@gmail.com",
+    //       password: "admin123",
+    //     });
+    //   }
+    //   return user;
+    // });
   })
   .catch((error) => console.log(error));
 // .then((result) => {

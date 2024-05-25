@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const env = require("dotenv");
+const { validationResult } = require("express-validator");
 env.config();
 
 // render login ans post login
@@ -15,18 +16,24 @@ exports.getLogin = (req, res, next) => {
 exports.postLoginData = (req, res, next) => {
   const { email, password } = req.body;
   let userInfo;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      title: "Login",
+      errorMessage: errors.array()[0].msg,
+      oldFormData: { email },
+    });
+  }
+
   User.findOne({ email })
     .select("+password")
     .then((user) => {
-      if (!user) throw new Error("Auth Error!User Not Exit Please Register!");
+      if (!user) throw new Error("User Not found");
       userInfo = user;
-      console.log(user);
-      console.log(password);
       return bcrypt.compare(password, user.password);
     })
     .then((isMatch) => {
-      if (!isMatch) throw new Error("Auth Error!");
-
+      if (!isMatch) throw new Error("Password not match!");
       req.session.isLogin = true;
       req.session.userInfo = userInfo;
       return req.session.save((err) => {
@@ -34,8 +41,11 @@ exports.postLoginData = (req, res, next) => {
       });
     })
     .catch((err) => {
-      req.flash("error", err.message);
-      res.redirect("/auth/login");
+      return res.status(422).render("auth/login", {
+        title: "Login",
+        errorMessage: "Authentication Failed! Check your email and password.",
+        oldFormData: { email },
+      });
     });
 };
 
@@ -47,16 +57,20 @@ exports.getRegister = (req, res, next) => {
   });
 };
 
-exports.postRegisterData = (req, res, next) => {
+exports.postRegisterData = async (req, res, next) => {
   const { email, username, password } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (user) throw new Error("Auth Error !User Already Exit!");
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/register", {
+      title: "Register",
+      errorMessage: errors.array()[0].msg,
+      oldFormData: { username, email },
+    });
+  }
 
-      return bcrypt.hash(password, 10);
-    })
+  bcrypt
+    .hash(password, 10)
     .then((result) => {
-      console.log(result);
       return User.create({
         username,
         email,
@@ -64,7 +78,6 @@ exports.postRegisterData = (req, res, next) => {
       });
     })
     .then((user) => {
-      console.log(req.transporter);
       req.transporter.sendMail({
         from: process.env.SENDER_MAIL,
         to: user.email,
@@ -74,7 +87,7 @@ exports.postRegisterData = (req, res, next) => {
       res.redirect("/auth/login");
     })
     .catch((err) => {
-      req.flash("error", err.message);
+      req.flash("error", err);
       res.redirect("/auth/register");
     });
   //   req.session.isLogin = true;
@@ -97,9 +110,23 @@ exports.renderResetPassword = (req, res, next) => {
 };
 
 exports.postResetPassword = (req, res, next) => {
-  const { password, confPassword, userId, token } = req.body;
+  const { password, userId, token } = req.body;
   let resultUser;
-  console.log("hit");
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return res.status(422).render("auth/new-password", {
+      title: "Reset Password",
+      errorMessage: errors.array()[0].msg,
+      userId,
+      token,
+    });
+  }
+
+
+  console.log(token);
+
   User.findOne({
     resetToken: token,
     tokenExpireDate: { $gt: Date.now() },
@@ -108,15 +135,16 @@ exports.postResetPassword = (req, res, next) => {
     .select("+password")
     .then((user) => {
       if (!user) return res.redirect("/auth/reset-password");
-      if (password !== confPassword) throw new Error("Passwords are not match");
       resultUser = user;
+      console.log(user.password);
+
       return bcrypt.compare(password, user.password);
     })
     .then((isMatch) => {
       if (isMatch) {
+        console.log("hit");
         throw new Error("Passwords should not  be same with previous password");
       }
-
       return bcrypt.hash(password, 10);
     })
     .then((hashPassword) => {
@@ -130,6 +158,7 @@ exports.postResetPassword = (req, res, next) => {
     })
     .catch((err) => {
       req.flash("error", err.message);
+      console.log(err);
       return res.redirect("/auth/reset-password/" + token);
     });
 };

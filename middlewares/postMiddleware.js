@@ -9,5 +9,8 @@ exports.isUser = (req, res, next) => {
       if (String(post?.userId) === String(req?.user?._id)) return next();
       return res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error("Something went wrong");
+      return next(error);
+    });
 };
