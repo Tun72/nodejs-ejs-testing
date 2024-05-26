@@ -6,7 +6,7 @@
       <% if(errorMessage.length > 0) { %>
       <span class="errorMessage"><%= errorMessage %></span>
       <% } %>
-      <form action="/admin" method="POST">
+      <form action="/admin" method="POST" enctype="multipart/form-data">
         <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
         <div>
           <label for="title">Enter title</label>
@@ -20,13 +20,7 @@
         </div>
         <div>
           <label for="photo">Enter photo</label>
-          <input
-            type="text"
-            id="photo"
-            name="imgUrl"
-            required
-            value="<%= `${locals?.oldFormData ? oldFormData?.imgUrl : ''}` %>"
-          />
+          <input type="file" id="photo" name="imgUrl" required />
         </div>
         <div>
           <label for="description">Enter description</label>

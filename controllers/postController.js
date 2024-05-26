@@ -1,8 +1,13 @@
 // const posts = [];
 const Post = require("../models/postModel");
 const { validationResult } = require("express-validator");
+const fileDelete = require("../utils/fileDelete");
+
+const fs = require("fs");
+const pdf = require("pdf")
 exports.createPost = (req, res) => {
   const errors = validationResult(req);
+  const image = req.file;
   if (!errors.isEmpty()) {
     return res.status(422).render("add-post", {
       title: "Add",
@@ -10,7 +15,16 @@ exports.createPost = (req, res) => {
       oldFormData: req.body,
     });
   }
-  Post.create({ ...req.body, userId: req.user })
+
+  if (!image) {
+    return res.status(422).render("add-post", {
+      title: "Add",
+      errorMessage: "Image should be png/jpg/jpeg",
+      oldFormData: req.body,
+    });
+  }
+
+  Post.create({ ...req.body, imgUrl: image.path, userId: req.user })
     .then((result) => {
       console.log(result);
       return res.redirect("/");
@@ -60,7 +74,7 @@ exports.getEditPost = (req, res, next) => {
 
   Post.findOne({ _id: postId })
     .then((post) => {
-      if (!post) throw new Error("Post not found")
+      if (!post) throw new Error("Post not found");
       res.render("edit-post", { title: "Edit", post, errorMessage: "" });
     })
     .catch((err) => {
@@ -68,8 +82,11 @@ exports.getEditPost = (req, res, next) => {
     });
 };
 
-exports.updatePost = (req, res) => {
+exports.updatePost = (req, res, next) => {
   const errors = validationResult(req);
+
+  const image = req.file;
+
   if (!errors.isEmpty()) {
     return res.status(422).render("edit-post", {
       title: "Edit",
@@ -78,15 +95,27 @@ exports.updatePost = (req, res) => {
       post: req.body,
     });
   }
-  const { _id, title, description, imgUrl } = req.body;
+  const { _id, title, description } = req.body;
 
-  Post.findByIdAndUpdate(_id, { title, description, imgUrl })
+  Post.findById(_id)
     .then((post) => {
-      console.log(post);
       if (!post) throw new Error("Something Went Wrong");
+
+      if (image) {
+        fileDelete(post.imgUrl);
+        post.imgUrl = image.path;
+      }
+
+      post.title = title;
+      post.description = description;
+      return post.save();
+    })
+    .then((_) => {
       res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.deletePost = (req, res) => {
@@ -95,9 +124,13 @@ exports.deletePost = (req, res) => {
 
   Post.findByIdAndDelete(postId)
     .then((result) => {
-      console.log(result);
+      fileDelete(result.imgUrl);
       console.log("successfully deleted");
       res.redirect("/");
     })
     .catch((err) => console.log(err));
 };
+
+exports.savePostAsPdf = (req, res, next) => {
+
+}

@@ -26,10 +26,11 @@ const postRouter = require("./routes/postRouter");
 const adminRouter = require("./routes/adminRouter");
 const authRouter = require("./routes/authRouter");
 
-//contoller 
-const errorController = require("./controllers/errorController")
+//contoller
+const errorController = require("./controllers/errorController");
 // middleware
 const loginMiddleware = require("./middlewares/loginMiddleware");
+const multer = require("multer");
 
 const store = new mongoStore({
   uri: process.env.MONGODB_URL,
@@ -39,9 +40,36 @@ const store = new mongoStore({
 const app = express();
 const csrfProtect = csrf();
 
+const storageConfigure = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+
+const fileFilterConfigure = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  multer({ storage: storageConfigure, fileFilter: fileFilterConfigure }).single(
+    "imgUrl"
+  )
+);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -86,9 +114,7 @@ app.all("*", (req, res) => {
   return res.status(404).render("error/404.ejs", { title: 404 });
 });
 
-app.use(
-   errorController.get500Page
-)
+app.use(errorController.get500Page);
 
 mongoose
   .connect(process.env.MONGODB_URL)

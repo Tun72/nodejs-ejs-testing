@@ -11,3 +11,8 @@
     <a class="btn" href="/post/<%= post._id %>">See More...</a>
   </div>
   <% } %> <% } %>
+
+       value="<%= `${locals?.oldFormData ? oldFormData?.imgUrl : ''}` %>"
+
+
+           value="<%=    `${locals?.oldFormData ? oldFormData?.imgUrl : post.imgUrl}` %>" //edit

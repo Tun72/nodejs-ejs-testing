@@ -15,7 +15,6 @@ router.post(
     body("title")
       .isLength({ min: 10 })
       .withMessage("title must be at least 10 characters long"),
-    body("imgUrl").isURL().withMessage("image must be at URL"),
     body("description")
       .isLength({ min: 30 })
       .withMessage("description must be at least 30 characters long"),
@@ -39,11 +38,9 @@ router
       body("title")
         .isLength({ min: 10 })
         .withMessage("title must be at least 10 characters long"),
-      body("imgUrl").isURL().withMessage("image must be at URL"),
       body("description")
         .isLength({ min: 30 })
         .withMessage("description must be at least 30 characters long"),
-     
     ],
     postController.updatePost
   );
