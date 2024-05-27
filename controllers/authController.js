@@ -124,7 +124,6 @@ exports.postResetPassword = (req, res, next) => {
     });
   }
 
-
   console.log(token);
 
   User.findOne({
@@ -142,7 +141,6 @@ exports.postResetPassword = (req, res, next) => {
     })
     .then((isMatch) => {
       if (isMatch) {
-        console.log("hit");
         throw new Error("Passwords should not  be same with previous password");
       }
       return bcrypt.hash(password, 10);
@@ -214,7 +212,7 @@ exports.sentResetLink = (req, res, next) => {
           to: user.email,
           subject: "Reset Password",
           html: `<h1>Reset Your Password Now.</h1><p>Click the link to change password 
-          <a href='http://localhost:3000/auth/reset-password/${token}'>change password </a>
+          <a href='${req.protocol}://${req.get("host")}/auth/reset-password/${token}'>change password </a>
            </p>`,
         });
       })
