@@ -1,0 +1,18 @@
+<%- include("../includes/header.ejs") %>
+<body>
+  <%- include("../includes/nav.ejs") %>
+  <section class="auth-form">
+    <h1 class="title">Premium Detail</h1>
+    <div class="premium-card">
+      <ul>
+        <li>Customer_id : <%= customer_id %></li>
+        <li>Country : <%= country %></li>
+        <li>Postal_code : <%= postal_code %></li>
+        <li>Name : <%= name %></li>
+        <li>Invoice_Id : <%= invoice_id %></li>
+        <li>Status : <%= status %></li>
+      </ul>
+    </div>
+  </section>
+</body>
+<%- include("../includes/footer.ejs") %>

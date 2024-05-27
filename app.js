@@ -101,6 +101,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.isLogin = req.session.isLogin || false;
   res.locals.csrfToken = req.csrfToken();
+  res.locals.user = req.user;
 
   next();
 });

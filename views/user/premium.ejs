@@ -1,0 +1,39 @@
+<%- include("../includes/header.ejs") %>
+<body>
+  <%- include("../includes/nav.ejs") %>
+  <section class="auth-form">
+    <h1 class="title">Buy Premium (Only $100)</h1>
+    <div class="premium-card">
+      <h2>What is special feature</h2>
+      <ul>
+        <li>
+          <span
+            class="animate__animated animate__infinite animate__headShake animate__delay-2s"
+            ><i class="fa-regular fa-star"></i
+          ></span>
+          Get a new animated premium icon.
+        </li>
+        <li><i class="fas fa-ban"></i> Ad-free experience</li>
+        <li><i class="fas fa-star"></i>Exclusive content</li>
+        <li><i class="fas fa-headset"></i> Priority support</li>
+        <li><i class="fas fa-file-alt"></i> Access to all premium articles</li>
+      </ul>
+      <button type="button" class="checkout-btn">Buy Now</button>
+    </div>
+  </section>
+
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script>
+    var stripe = Stripe(
+      "pk_test_51PKnBoGdUET7yi55utCmdtA8hwvyxfOwuHzYi9sdP1JFHyVLedGJ7Z4QPpT41Ujg3ejlw8srcScxcgGy37Qx098m00Iaoj1wa8"
+    );
+    let checkoutBtn = document.querySelector(".checkout-btn");
+    checkoutBtn.addEventListener("click", (e) => {
+      stripe.redirectToCheckout({
+        sessionId: "<%= session_id %>",
+      });
+    });
+  </script>
+</body>
+<%- include("../includes/footer.ejs") %>

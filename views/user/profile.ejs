@@ -1,0 +1,75 @@
+<%- include("../includes/header.ejs") %>
+<body>
+  <%- include("../includes/nav.ejs") %>
+
+  <div class="profile">
+    <div class="profile-photo">
+      <% if(user.isPremium) { %>
+      <img src="<%=  '/' + user?.profileImg %>"  alt=""/>
+      <% } else { %>
+      <i class="fa-solid fa-circle-user"></i>
+      <% } %>
+    </div>
+    <div class="profile-detail">
+      <h2><%= user.username %></h2>
+      <p>Email - <%= user.email %></p>
+      <div>
+        <p>
+          Premium - <%= `${user.isPremium ? "Premium User" : "Free User"}` %>
+        </p>
+        <% if(user.isPremium) { %>
+        <span
+          class="animate__animated animate__infinite animate__headShake animate__delay-2s"
+          ><i class="fa-regular fa-star"></i
+        ></span>
+        <% } %>
+      </div>
+      <p>
+        <a href="/admin/profile/edit">Edit Profile</a>
+        <% if(user.isPremium) { %>
+        <a href="/admin/update-profile-picture">set Picture</a>
+        <% } %> <% if(user.isPremium) { %>
+        <a href="/admin/premium-detail">Premium Status</a>
+        <% } else { %>
+        <a href="/admin/profile/buy-premium">Buy Premium</a>
+        <% } %>
+      </p>
+    </div>
+  </div>
+  <div class="content">
+    <div class="collumns">
+      <% if(posts.length === 0 && isLogin) { %>
+      <div class="collumn nothing">
+        <h1>No Post Found!</h1>
+      </div>
+      <% } else { %> <% for(let post of posts) { %>
+      <div class="collumn">
+        <div class="head">
+          <!-- <span class="headline hl5"><%= post.title %></span> -->
+          <p><span class="headline hl6"><%= post.title %></span></p>
+        </div>
+        <figure class="figure">
+          <img class="media" src="<%= '/' + post?.imgUrl %>" alt="" />
+          <figcaption class="figcaption"><%= post?.createdAt %></figcaption>
+        </figure>
+
+        <p><%= `${post?.description.slice(1, 300)}` ?? "Anonymous" %></p>
+
+        <p><a href="/post/<%= post._id %>">Read More</a></p>
+      </div>
+      <% } %> <% } %>
+    </div>
+  </div>
+
+  <% if(posts.length !== 0) { %>
+  <div class="next-page <%= `${hasNext && !hasPrev ? 'next' : '' }` %>">
+    <% if(hasPrev) {%>
+    <a href="/admin/profile?page=<%= `${currentPage - 1}` %>">Prev</a>
+    <%} %> <% if(hasNext) { %>
+    <a href="/admin/profile?page=<%= `${currentPage + 1}` %>">Next</a>
+    <% } %>
+  </div>
+  <% } %>
+</body>
+
+<%- include("../includes/footer.ejs") %>

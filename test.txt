@@ -1,18 +1,9 @@
-  <% if(posts.length === 0 && isLogin) { %>
-  <div class="create">
-    <h4>Nothing to see ?</h4>
-    <p>Create a new post now !!!</p>
-    <a href="/admin/create-post">Create a new post</a>
-  </div>
-  <% } else { %> <% for(let post of posts) { %>
-  <div class="box">
-    <h2 class="post-title"><%= post.title %></h2>
-    <p><%= post?.userId?.username ?? "Anonymous" %></p>
-    <a class="btn" href="/post/<%= post._id %>">See More...</a>
-  </div>
-  <% } %> <% } %>
+
 
        value="<%= `${locals?.oldFormData ? oldFormData?.imgUrl : ''}` %>"
 
 
            value="<%=    `${locals?.oldFormData ? oldFormData?.imgUrl : post.imgUrl}` %>" //edit
+
+
+     

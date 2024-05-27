@@ -1,0 +1,28 @@
+<%- include("../includes/header.ejs") %>
+<body>
+  <%- include("../includes/nav.ejs") %>
+  <section class="auth-form">
+    <h1 class="title">Reset your username</h1>
+    <div class="form-design">
+      <% if(errorMessage.length > 0) { %>
+      <span class="errorMessage"><%= errorMessage %></span>
+      <% }%>
+      <form action="/admin/profile/edit" method="POST">
+        <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
+
+        <div>
+          <label for="text">Set username</label>
+          <input
+            type="text"
+            id="text"
+            name="username"
+            required
+            value="<%= `${locals?.oldFormData ? oldFormData?.username : ''}` %>"
+          />
+        </div>
+        <button>Reset Username</button>
+      </form>
+    </div>
+  </section>
+</body>
+<%- include("../includes/footer.ejs") %>

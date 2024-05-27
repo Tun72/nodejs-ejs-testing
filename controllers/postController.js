@@ -1,10 +1,14 @@
 // const posts = [];
 const Post = require("../models/postModel");
+const User = require("../models/userModel");
+
 const { validationResult } = require("express-validator");
 const fileDelete = require("../utils/fileDelete");
 
 const fs = require("fs");
-const pdf = require("pdf")
+const pdf = require("pdf-creator-node");
+const file_path = require("path");
+
 exports.createPost = (req, res) => {
   const errors = validationResult(req);
   const image = req.file;
@@ -26,28 +30,50 @@ exports.createPost = (req, res) => {
 
   Post.create({ ...req.body, imgUrl: image.path, userId: req.user })
     .then((result) => {
-      console.log(result);
+      return User.findByIdAndUpdate(req.user._id, {
+        $push: { posts: result._id },
+      });
+    })
+    .then((_) => {
       return res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 };
 
 exports.renderCreatePage = (req, res) => {
   res.render("add-post", { title: "Add", errorMessage: "" });
 };
 
-exports.renderHomePage = (req, res) => {
+exports.renderHomePage = (req, res, next) => {
+  const pageNumber = +req.query.page || 1;
+
+  const POST_PER_PAGE = 5;
+  let totalPostNumber;
   Post.find()
-    .populate("userId", "username")
-    .sort({ title: 1 })
+    .countDocuments()
+    .then((totalPost) => {
+      totalPostNumber = totalPost;
+      return Post.find()
+        .populate("userId", "username isPremium profileImg")
+        .limit(POST_PER_PAGE)
+        .skip((pageNumber - 1) * POST_PER_PAGE)
+        .sort({ title: 1 });
+    })
     .then((posts) => {
+      // if (!posts.length) throw new Error("No Posts Available!");
+
       res.render("home", {
         title: "home",
         posts,
+        currentPage: pageNumber,
+        hasNext: POST_PER_PAGE * pageNumber < totalPostNumber,
+        hasPrev: pageNumber > 1,
         isLogin: req?.session?.isLogin,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getPost = (req, res, next) => {
@@ -55,12 +81,13 @@ exports.getPost = (req, res, next) => {
   if (!postId) return res.send("ERROR");
 
   Post.findById(postId)
+    .populate("userId")
     .then((post) => {
       if (!post) return res.redirect("/");
       res.render("detail", {
         title: post.title,
         post,
-        isOwner: String(req?.user?._id) === String(post.userId),
+        isOwner: String(req?.user?._id) === String(post.userId._id),
       });
     })
     .catch((err) => {
@@ -118,7 +145,7 @@ exports.updatePost = (req, res, next) => {
     });
 };
 
-exports.deletePost = (req, res) => {
+exports.deletePost = (req, res, next) => {
   const { postId } = req.params;
   if (!postId) return res.redirect("/");
 
@@ -128,9 +155,65 @@ exports.deletePost = (req, res) => {
       console.log("successfully deleted");
       res.redirect("/");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => next(err));
 };
 
 exports.savePostAsPdf = (req, res, next) => {
+  const { id } = req.params;
+  const templateUrl = `${file_path.join(
+    __dirname,
+    "../views/template/template.html"
+  )}`;
+  const date = new Date();
 
-}
+  const html = fs.readFileSync(templateUrl, "utf-8");
+  const options = {
+    format: "A4",
+    orientation: "portrait",
+    border: "10mm",
+    header: {
+      height: "45mm",
+      contents: '<div style="text-align: center;">From BLOG.IO</div>',
+    },
+    footer: {
+      height: "28mm",
+      contents: {
+        default: '<p style="color: #444;text-align: center">@codehub.mm</p>', // fallback value
+      },
+    },
+  };
+
+  const pdfSaveUrl = `${file_path.join(
+    __dirname,
+    "../public/pdf",
+    date.getTime() + ".pdf"
+  )}`;
+
+  const myURL = req.protocol + "://" + req.get("host");
+
+  Post.findById(id)
+    .populate("userId")
+    .lean()
+    .then((post) => {
+      post.imgUrl = myURL + "/" + post.imgUrl;
+      const document = {
+        html,
+        data: {
+          postData: post,
+        },
+        path: pdfSaveUrl,
+        type: "",
+      };
+
+      return pdf.create(document, options);
+    })
+    .then((_) => {
+      return res.download(pdfSaveUrl);
+    })
+    .then((_) => {
+      fileDelete(pdfSaveUrl);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

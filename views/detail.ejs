@@ -1,15 +1,29 @@
 <%- include("./includes/header.ejs") %>
 <section class="details">
   <h1><%= post.title %></h1>
+  <div class="post-options">
+    <div>
+      <p><%= post.userId.email %></p>
+      <% if(user?.isPremium) { %>
+      <a href="/save/<%= post._id %>" class="save_pdf"
+        ><i class="fa-solid fa-file-arrow-down"></i><span>save pdf</span></a
+      >
+      <% } %>
+    </div>
+
+    <a href="/"> go home</a>
+  </div>
+
   <img src="<%= "/" + post.imgUrl %>" alt="<%= post.title %>" />
   <p><%= post.description %></p>
-
   <% if(isOwner) { %>
-  <form action="/admin/post/<%= post._id %>/delete" method="POST">
-    <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
-    <button type="submit">delete</button>
-  </form>
-  <a href="/admin/edit/<%= post._id %>">Update</a>
+  <div class="post-edit">
+    <form action="/admin/post/<%= post._id %>/delete" method="POST">
+      <input type="hidden" value="<%= csrfToken %>" name="_csrf" />
+      <button type="submit">delete</button>
+    </form>
+    <a href="/admin/edit/<%= post._id %>">Update</a>
+  </div>
   <% } %>
 </section>
 <%- include("./includes/footer.ejs") %>
