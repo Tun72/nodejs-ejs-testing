@@ -166,6 +166,8 @@ exports.savePostAsPdf = (req, res, next) => {
   )}`;
   const date = new Date();
 
+  console.log("hit 1");
+
   const html = fs.readFileSync(templateUrl, "utf-8");
   const options = {
     format: "A4",
@@ -183,11 +185,15 @@ exports.savePostAsPdf = (req, res, next) => {
     },
   };
 
+  console.log("hit 2");
+
   const pdfSaveUrl = `${file_path.join(
     __dirname,
     "../public/pdf",
     date.getTime() + ".pdf"
   )}`;
+
+  console.log("hit 3");
 
   const myURL = req.protocol + "://" + req.get("host");
 
@@ -196,6 +202,8 @@ exports.savePostAsPdf = (req, res, next) => {
     .lean()
     .then((post) => {
       post.imgUrl = myURL + "/" + post.imgUrl;
+
+   
       const document = {
         html,
         data: {
@@ -205,12 +213,15 @@ exports.savePostAsPdf = (req, res, next) => {
         type: "",
       };
 
+      console.log("hit 4");
       return pdf.create(document, options);
     })
     .then((_) => {
+      console.log("hit 5");
       return res.download(pdfSaveUrl);
     })
     .then((_) => {
+      console.log("hit 6");
       fileDelete(pdfSaveUrl);
     })
     .catch((err) => {
