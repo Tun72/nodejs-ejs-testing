@@ -1,9 +1,0 @@
-
-
-       value="<%= `${locals?.oldFormData ? oldFormData?.imgUrl : ''}` %>"
-
-
-           value="<%=    `${locals?.oldFormData ? oldFormData?.imgUrl : post.imgUrl}` %>" //edit
-
-
-     
