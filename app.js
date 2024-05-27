@@ -109,7 +109,6 @@ app.use("/", postRouter);
 app.use("/admin", loginMiddleware.isLogin, adminRouter);
 app.use("/auth", authRouter);
 
-const PORT = process.env.PORT || 3000;
 
 app.all("*", (req, res) => {
   return res.status(404).render("error/404.ejs", { title: 404 });
@@ -117,11 +116,12 @@ app.all("*", (req, res) => {
 
 app.use(errorController.get500Page);
 
+const PORT = process.env.PORT || 3000;
 mongoose
   .connect(process.env.MONGODB_URL)
   .then((_) => {
     console.log("database successfully connected ✅");
-    app.listen(3000, () => {
+    app.listen(PORT, () => {
       console.log("Server is running at http://localhost:" + PORT);
     });
 
